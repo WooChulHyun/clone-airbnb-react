@@ -19,6 +19,12 @@ const signUpModule = handleActions(
       data: action.payload
     })
   },
+  {
+    [POST_SIGNUP_FAILURE]: (state, action) => ({
+      ...state,
+      data: action.payload
+    })
+  },
   initialState
 );
 
