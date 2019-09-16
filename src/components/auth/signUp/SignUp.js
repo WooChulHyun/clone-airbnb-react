@@ -18,10 +18,14 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const [enterFirstName, setEnterFirstName] = useState('');
   const [userFirstNameClicked, setUserFirstNameClicked] = useState(false);
   const [userFirstNameValidate, setUserFirstNameValidate] = useState(false);
+  const [enterSecondName, setEnterSecondName] = useState('');
+  const [userSecondNameClicked, setUserSecondNameClicked] = useState(false);
+  const [userSecondNameValidate, setUserSecondNameValidate] = useState(false);
 
   const usernameRef = useRef(null);
   const userEmailRef = useRef(null);
   const userFirstNameRef = useRef(null);
+  const userSecondNameRef = useRef(null);
 
   const onSubmit = () => {};
 
@@ -47,7 +51,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
     [validateEmail]
   );
 
-  const validateFirtstName = useCallback(firstname => {
+  const validateFirstName = useCallback(firstname => {
     const firstNameRegExp = /[가-힣]{1,4}|[a-zA-Z. ]*[a-zA-Z]{1,60}$/;
 
     if (firstname.match(firstNameRegExp)) {
@@ -60,9 +64,27 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const userFirstNameChange = useCallback(
     e => {
       setEnterFirstName(e.target.value);
-      validateFirtstName(e.target.value);
+      validateFirstName(e.target.value);
     },
-    [validateFirtstName]
+    [validateFirstName]
+  );
+
+  const validateSecondName = useCallback(secondname => {
+    const secondNameRegExp = /[가-힣]{1,4}|[a-zA-Z. ]*[a-zA-Z]{1,60}$/;
+
+    if (secondname.match(secondNameRegExp)) {
+      setUserSecondNameValidate(true);
+    } else {
+      setUserSecondNameValidate(false);
+    }
+  }, []);
+
+  const userSecondNameChange = useCallback(
+    e => {
+      setEnterSecondName(e.target.value);
+      validateSecondName(e.target.value);
+    },
+    [validateSecondName]
   );
 
   const inputDivClicked = useCallback(ref => {
@@ -76,6 +98,8 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
       setUserEmailClicked(true);
     } else if (refer === 'userFirstNameRef') {
       setUserFirstNameClicked(true);
+    } else if (refer === 'userSecondNameRef') {
+      setUserSecondNameClicked(true);
     }
     ref.current.style.border = '1px solid #f1f1f1';
   }, []);
@@ -211,6 +235,45 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   <>
                     <p className={cx('warningMessage')}>
                       Enter a valid first name.
+                    </p>
+                  </>
+                )}
+                <div
+                  className={cx('inputDiv')}
+                  ref={userSecondNameRef}
+                  onClick={() => inputDivClicked(userSecondNameRef)}
+                  onFocus={() => inputDivClicked(userSecondNameRef)}
+                  onBlur={() =>
+                    inputDivUnclicked(userSecondNameRef, 'userSecondNameRef')
+                  }
+                  style={{
+                    background:
+                      (!enterSecondName || !userSecondNameValidate) &&
+                      userSecondNameClicked
+                        ? 'rgba(252, 100, 45, 0.3)'
+                        : '#fff'
+                  }}
+                >
+                  <input
+                    className={cx('input')}
+                    type='text'
+                    placeholder='First name'
+                    onChange={userSecondNameChange}
+                    style={{ background: 'rgba(255, 255, 255, 0)' }}
+                  />
+                  <FaUser className={cx('fa fa-user-o')} />
+                </div>
+                {!enterSecondName && userSecondNameClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>
+                      Second name is required.
+                    </p>
+                  </>
+                )}
+                {!userSecondNameValidate && userSecondNameClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>
+                      Enter a valid second name.
                     </p>
                   </>
                 )}
