@@ -1,13 +1,16 @@
 import React from 'react';
-import classNames from 'classnames/bind';
-import style from './App.module.scss';
-
-const cx = classNames.bind(style);
+import { Route, Switch } from 'react-router-dom';
+import { Home, SignUp } from './pages';
+import NotFound from './shared/not-found/NotFound';
 
 function App() {
   return (
     <div>
-      <p>test</p>
+      <Switch>
+        <Route exact path='/' component={Home} />
+        <Route path='/signUp' component={SignUp} />
+        <Route render={() => <NotFound />} />
+      </Switch>
     </div>
   );
 }
