@@ -14,6 +14,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const [enterEmail, setEnterEmail] = useState('');
   const [userEmailClicked, setUserEmailClicked] = useState(false);
   const [userEmailDuplicate, setUserEmailDuplicate] = useState(false);
+  const [userEmailValidate, setUserEmailValidate] = useState(false);
   const usernameRef = useRef(null);
   const userEmailRef = useRef(null);
 
@@ -23,17 +24,23 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
     setEnterUsername(e.target.value);
   }, []);
 
-  const userEmailChange = useCallback(e => {
-    setEnterEmail(e.target.value);
-  }, []);
-
   const validateEmail = useCallback(email => {
     const emailRegExp = /[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}/;
 
     if (email.match(emailRegExp)) {
+      setUserEmailValidate(true);
     } else {
+      setUserEmailValidate(false);
     }
   }, []);
+
+  const userEmailChange = useCallback(
+    e => {
+      setEnterEmail(e.target.value);
+      validateEmail(e.target.value);
+    },
+    [validateEmail]
+  );
 
   const inputDivClicked = useCallback(ref => {
     ref.current.style.border = '1px solid #87CEFA';
@@ -123,6 +130,23 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   />
                   <MdEmail className={cx('fa fa-envelope-o')} />
                 </div>
+                {!enterEmail && userEmailClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>Email is required.</p>
+                  </>
+                )}
+                {!userEmailValidate && userEmailClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>Enter a valid email.</p>
+                  </>
+                )}
+                {userEmailDuplicate && userEmailClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>
+                      Email is already exist.
+                    </p>
+                  </>
+                )}
               </form>
             </div>
           </div>
