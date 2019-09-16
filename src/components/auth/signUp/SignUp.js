@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import style from './SignUp.module.scss';
 import ClassNames from 'classnames/bind';
-import { FaRegIdCard } from 'react-icons/fa';
+import { FaRegIdCard, FaUser } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 
 const cx = ClassNames.bind(style);
@@ -15,8 +15,13 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const [userEmailClicked, setUserEmailClicked] = useState(false);
   const [userEmailDuplicate, setUserEmailDuplicate] = useState(false);
   const [userEmailValidate, setUserEmailValidate] = useState(false);
+  const [enterFirstName, setEnterFirstName] = useState('');
+  const [userFirstNameClicked, setUserFirstNameClicked] = useState(false);
+  const [userFirstNameValidate, setUserFirstNameValidate] = useState(false);
+
   const usernameRef = useRef(null);
   const userEmailRef = useRef(null);
+  const userFirstNameRef = useRef(null);
 
   const onSubmit = () => {};
 
@@ -42,6 +47,24 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
     [validateEmail]
   );
 
+  const validateFirtstName = useCallback(firstname => {
+    const firstNameRegExp = /[가-힣]{1,4}|[a-zA-Z. ]*[a-zA-Z]{1,60}$/;
+
+    if (firstname.match(firstNameRegExp)) {
+      setUserFirstNameValidate(true);
+    } else {
+      setUserFirstNameValidate(false);
+    }
+  }, []);
+
+  const userFirstNameChange = useCallback(
+    e => {
+      setEnterFirstName(e.target.value);
+      validateFirtstName(e.target.value);
+    },
+    [validateFirtstName]
+  );
+
   const inputDivClicked = useCallback(ref => {
     ref.current.style.border = '1px solid #87CEFA';
   }, []);
@@ -51,6 +74,8 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
       setUsernameClicked(true);
     } else if (refer === 'userEmailRef') {
       setUserEmailClicked(true);
+    } else if (refer === 'userFirstNameRef') {
+      setUserFirstNameClicked(true);
     }
     ref.current.style.border = '1px solid #f1f1f1';
   }, []);
@@ -115,7 +140,10 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   onBlur={() => inputDivUnclicked(userEmailRef, 'userEmailRef')}
                   style={{
                     background:
-                      (userEmailDuplicate || !enterEmail) && userEmailClicked
+                      (userEmailDuplicate ||
+                        !enterEmail ||
+                        !userEmailValidate) &&
+                      userEmailClicked
                         ? 'rgba(252, 100, 45, 0.3)'
                         : '#fff'
                   }}
@@ -144,6 +172,45 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   <>
                     <p className={cx('warningMessage')}>
                       Email is already exist.
+                    </p>
+                  </>
+                )}
+                <div
+                  className={cx('inputDiv')}
+                  ref={userFirstNameRef}
+                  onClick={() => inputDivClicked(userFirstNameRef)}
+                  onFocus={() => inputDivClicked(userFirstNameRef)}
+                  onBlur={() =>
+                    inputDivUnclicked(userFirstNameRef, 'userFirstNameRef')
+                  }
+                  style={{
+                    background:
+                      (!enterFirstName || !userFirstNameValidate) &&
+                      userFirstNameClicked
+                        ? 'rgba(252, 100, 45, 0.3)'
+                        : '#fff'
+                  }}
+                >
+                  <input
+                    className={cx('input')}
+                    type='text'
+                    placeholder='First name'
+                    onChange={userFirstNameChange}
+                    style={{ background: 'rgba(255, 255, 255, 0)' }}
+                  />
+                  <FaUser className={cx('fa fa-user-o')} />
+                </div>
+                {!enterFirstName && userFirstNameClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>
+                      First name is required.
+                    </p>
+                  </>
+                )}
+                {!userFirstNameValidate && userFirstNameClicked && (
+                  <>
+                    <p className={cx('warningMessage')}>
+                      Enter a valid first name.
                     </p>
                   </>
                 )}
