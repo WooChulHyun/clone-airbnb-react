@@ -1,7 +1,13 @@
 import React, { useState, useRef, useCallback } from 'react';
 import style from './SignUp.module.scss';
 import ClassNames from 'classnames/bind';
-import { FaRegIdCard, FaUser } from 'react-icons/fa';
+import {
+  FaRegIdCard,
+  FaUser,
+  FaLock,
+  FaTimesCircle,
+  FaRegCheckCircle
+} from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 
 const cx = ClassNames.bind(style);
@@ -21,11 +27,21 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const [enterSecondName, setEnterSecondName] = useState('');
   const [userSecondNameClicked, setUserSecondNameClicked] = useState(false);
   const [userSecondNameValidate, setUserSecondNameValidate] = useState(false);
+  const [enterPassword, setEnterPassword] = useState('');
+  const [userPasswordClicked, setUserPasswordClicked] = useState(false);
+  const [userPasswordValidateLength, setUserPasswordValidateLength] = useState(
+    false
+  );
+  const [
+    userPasswordValidatePattern,
+    setUserPasswordValidatePattern
+  ] = useState(false);
 
   const usernameRef = useRef(null);
   const userEmailRef = useRef(null);
   const userFirstNameRef = useRef(null);
   const userSecondNameRef = useRef(null);
+  const userPasswordRef = useRef(null);
 
   const onSubmit = () => {};
 
@@ -87,6 +103,30 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
     [validateSecondName]
   );
 
+  const validatePassword = useCallback(password => {
+    const passwordRegExp = /(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[$@$!%*?&])[A-Za-z0-9d$@$!%*?&].{8,}/;
+
+    if (password.match(passwordRegExp)) {
+      setUserPasswordValidatePattern(true);
+    } else {
+      setUserPasswordValidatePattern(false);
+    }
+
+    if (password.length >= 8) {
+      setUserPasswordValidateLength(true);
+    } else {
+      setUserPasswordValidateLength(false);
+    }
+  });
+
+  const userPasswordChange = useCallback(
+    e => {
+      setEnterPassword(e.target.value);
+      validatePassword(e.target.value);
+    },
+    [validatePassword]
+  );
+
   const inputDivClicked = useCallback(ref => {
     ref.current.style.border = '1px solid #87CEFA';
   }, []);
@@ -100,6 +140,8 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
       setUserFirstNameClicked(true);
     } else if (refer === 'userSecondNameRef') {
       setUserSecondNameClicked(true);
+    } else if (refer === 'userPasswordRef') {
+      setUserPasswordClicked(true);
     }
     ref.current.style.border = '1px solid #f1f1f1';
   }, []);
@@ -142,7 +184,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                     onChange={usernameChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
                   />
-                  <FaRegIdCard className={cx('fa fa-id-card-o')} />
+                  <FaRegIdCard className={cx('fa', 'fa-id-card-o')} />
                 </div>
                 {!enterUsername && usernameClicked && (
                   <>
@@ -180,7 +222,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                     onChange={userEmailChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
                   />
-                  <MdEmail className={cx('fa fa-envelope-o')} />
+                  <MdEmail className={cx('fa', 'fa-envelope-o')} />
                 </div>
                 {!enterEmail && userEmailClicked && (
                   <>
@@ -222,7 +264,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                     onChange={userFirstNameChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
                   />
-                  <FaUser className={cx('fa fa-user-o')} />
+                  <FaUser className={cx('fa', 'fa-user-o')} />
                 </div>
                 {!enterFirstName && userFirstNameClicked && (
                   <>
@@ -261,7 +303,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                     onChange={userSecondNameChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
                   />
-                  <FaUser className={cx('fa fa-user-o')} />
+                  <FaUser className={cx('fa', 'fa-user-o')} />
                 </div>
                 {!enterSecondName && userSecondNameClicked && (
                   <>
@@ -277,6 +319,74 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                     </p>
                   </>
                 )}
+                <div
+                  className={cx('inputDiv')}
+                  ref={userPasswordRef}
+                  onClick={() => inputDivClicked(userPasswordRef)}
+                  onFocus={() => inputDivClicked(userPasswordRef)}
+                  onBlur={() =>
+                    inputDivUnclicked(userPasswordRef, 'userPasswordRef')
+                  }
+                >
+                  <input
+                    className={cx('input')}
+                    type='text'
+                    placeholder='Password'
+                    onChange={userPasswordChange}
+                  />
+                  <FaLock className={cx('fa', 'fa-eye-slash')} />
+                </div>
+                <div>
+                  <p>
+                    {!userPasswordValidateLength && (
+                      <>
+                        <FaTimesCircle className={cx('fa', 'fa-times')} />
+                        <span
+                          className={cx('warningPassword')}
+                          style={{ color: '#fc642d' }}
+                        >
+                          Please enter at least 8 digits.
+                        </span>
+                      </>
+                    )}
+                    {userPasswordValidateLength && (
+                      <>
+                        <FaRegCheckCircle className={cx('fa', 'fa-check')} />
+                        <span
+                          className={cx('warningPassword')}
+                          style={{ color: '#00a699' }}
+                        >
+                          Please enter at least 8 digits.
+                        </span>
+                      </>
+                    )}
+                    <br />
+                    {!userPasswordValidatePattern && (
+                      <>
+                        <FaTimesCircle className={cx('fa', 'fa-times')} />
+                        <span
+                          className={cx('warningPassword')}
+                          style={{ color: '#fc642d' }}
+                        >
+                          Make it a combination of numbers, letters, and special
+                          characters.
+                        </span>
+                      </>
+                    )}
+                    {userPasswordValidatePattern && (
+                      <>
+                        <FaRegCheckCircle className={cx('fa', 'fa-check')} />
+                        <span
+                          className={cx('warningPassword')}
+                          style={{ color: '#00a699' }}
+                        >
+                          Make it a combination of numbers, letters, and special
+                          characters.
+                        </span>
+                      </>
+                    )}
+                  </p>
+                </div>
               </form>
             </div>
           </div>
