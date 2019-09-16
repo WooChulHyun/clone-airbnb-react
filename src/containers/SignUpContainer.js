@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import SignUp from '../components/auth/signUp/SignUp';
 import { postSignUpThunk } from '../modules/signUpModule';
 
-const SignUpContainer = ({ data, loading }) => {
+const SignUpContainer = ({ data, loading, postSignUpThunk }) => {
   return (
     <SignUp data={data} loading={loading} postSignUpThunk={postSignUpThunk} />
   );
