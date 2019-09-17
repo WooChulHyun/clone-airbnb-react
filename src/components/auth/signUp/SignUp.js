@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import style from './SignUp.module.scss';
 import ClassNames from 'classnames/bind';
 import {
@@ -27,7 +27,9 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const [enterSecondName, setEnterSecondName] = useState('');
   const [userSecondNameClicked, setUserSecondNameClicked] = useState(false);
   const [userSecondNameValidate, setUserSecondNameValidate] = useState(false);
+  // eslint-disable-next-line
   const [enterPassword, setEnterPassword] = useState('');
+  // eslint-disable-next-line
   const [userPasswordClicked, setUserPasswordClicked] = useState(false);
   const [userPasswordValidateLength, setUserPasswordValidateLength] = useState(
     false
@@ -36,6 +38,38 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
     userPasswordValidatePattern,
     setUserPasswordValidatePattern
   ] = useState(false);
+  const [month, setMonth] = useState([]);
+  // eslint-disable-next-line
+  const [selectedMonth, setSelectedMonth] = useState(1);
+  const [day, setDay] = useState([]);
+  // eslint-disable-next-line
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [year, setYear] = useState([]);
+  // eslint-disable-next-line
+  const [selectedYear, setSelectedYear] = useState(2019);
+  const [btnActivate, setBtnActivate] = useState(false);
+
+  useEffect(() => {
+    const months = [];
+    const days = [];
+    const years = [];
+    for (let i = 1; i <= 12; i++) {
+      months.push(i);
+    }
+    setMonth(months);
+
+    for (let i = 1; i <= 31; i++) {
+      days.push(i);
+    }
+
+    setDay(days);
+
+    for (let i = 2019; i >= 1900; i--) {
+      years.push(i);
+    }
+
+    setYear(years);
+  }, []);
 
   const usernameRef = useRef(null);
   const userEmailRef = useRef(null);
@@ -44,6 +78,28 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
   const userPasswordRef = useRef(null);
 
   const onSubmit = () => {};
+
+  useEffect(() => {
+    if (
+      enterUsername !== '' &&
+      userEmailValidate &&
+      userFirstNameValidate &&
+      userSecondNameValidate &&
+      userPasswordValidateLength &&
+      userPasswordValidatePattern
+    ) {
+      setBtnActivate(true);
+    } else {
+      setBtnActivate(false);
+    }
+  }, [
+    enterUsername,
+    userEmailValidate,
+    userFirstNameValidate,
+    userPasswordValidateLength,
+    userPasswordValidatePattern,
+    userSecondNameValidate
+  ]);
 
   const usernameChange = useCallback(e => {
     setEnterUsername(e.target.value);
@@ -117,7 +173,7 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
     } else {
       setUserPasswordValidateLength(false);
     }
-  });
+  }, []);
 
   const userPasswordChange = useCallback(
     e => {
@@ -179,10 +235,12 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   <input
                     className={cx('input')}
                     type='text'
+                    value={enterUsername}
                     placeholder='ID'
                     onClick={deleteUserNameWarningMessage}
                     onChange={usernameChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
+                    autoComplete='off'
                   />
                   <FaRegIdCard className={cx('fa', 'fa-id-card-o')} />
                 </div>
@@ -217,10 +275,12 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   <input
                     className={cx('input')}
                     type='text'
+                    value={enterEmail}
                     placeholder='Email address'
                     onClick={deleteEmailWarningMessage}
                     onChange={userEmailChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
+                    autoComplete='off'
                   />
                   <MdEmail className={cx('fa', 'fa-envelope-o')} />
                 </div>
@@ -260,9 +320,11 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   <input
                     className={cx('input')}
                     type='text'
+                    value={enterFirstName}
                     placeholder='First name'
                     onChange={userFirstNameChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
+                    autoComplete='off'
                   />
                   <FaUser className={cx('fa', 'fa-user-o')} />
                 </div>
@@ -299,9 +361,11 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                   <input
                     className={cx('input')}
                     type='text'
-                    placeholder='First name'
+                    value={enterSecondName}
+                    placeholder='Second name'
                     onChange={userSecondNameChange}
                     style={{ background: 'rgba(255, 255, 255, 0)' }}
+                    autoComplete='off'
                   />
                   <FaUser className={cx('fa', 'fa-user-o')} />
                 </div>
@@ -330,9 +394,11 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                 >
                   <input
                     className={cx('input')}
-                    type='text'
+                    type='password'
+                    value={enterPassword}
                     placeholder='Password'
                     onChange={userPasswordChange}
+                    autoComplete='off'
                   />
                   <FaLock className={cx('fa', 'fa-eye-slash')} />
                 </div>
@@ -387,6 +453,44 @@ const SignUp = ({ data, loading, postSignUpThunk }) => {
                     )}
                   </p>
                 </div>
+                <div className={cx('textBold')}>Birthday</div>
+                <div className={cx('selectBoxes')}>
+                  <select
+                    className={cx('monthSelector')}
+                    onChange={value => setSelectedMonth(value)}
+                  >
+                    {month.map(item => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                  <select
+                    className={cx('daySelector')}
+                    onChange={value => setSelectedDay(value)}
+                  >
+                    {day.map(item => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                  <select
+                    className={cx('yearSelector')}
+                    onChange={value => setSelectedYear(value)}
+                  >
+                    {year.map(item => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className={cx('textColor484848')}>
+                  We’ll send you marketing promotions, special offers,
+                  inspiration, and policy updates via email.
+                </div>
+                <button
+                  type='submit'
+                  disabled={!btnActivate}
+                  className={cx('signUpBtn', btnActivate ? '' : 'disable')}
+                >
+                  Submit
+                </button>
               </form>
             </div>
           </div>
